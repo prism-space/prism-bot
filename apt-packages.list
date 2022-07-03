@@ -1,0 +1,13 @@
+# pyenv requirements
+curl
+git-core
+gcc
+make
+zlib1g-dev
+libbz2-dev
+libreadline-dev
+libsqlite3-dev
+libssl-dev
+
+# prismbot requirements
+postgresql-12

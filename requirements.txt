@@ -1,0 +1,4 @@
+black>=22.6.0
+Django~=4.0.5
+flake8>=4.0.1
+psycopg2~=2.9.3

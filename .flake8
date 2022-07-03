@@ -1,0 +1,42 @@
+[flake8]
+doctests = True
+exclude =
+    .git,
+    .tox,
+    __pycache__,
+    venv,
+    migrations,
+    static,
+    sass,
+    templates,
+    vcr,
+    doc,
+    sql,
+    docker,
+    bin,
+    conf,
+    local_settings,
+    local_settings_*.py
+select =
+    # enable pyflakes
+    F,
+    # enable compilation error
+    E999,
+    # flake8-tidy-imports
+    I
+per-file-ignores =
+    src/muckrack/settings/base.py:F401
+extend-ignore =
+    F403
+banned-modules =
+    datetime.datetime.now = Use timezone.now instead of datetime.datetime.now
+    dirtyfields.DirtyFieldsMixin = Use muckrack.utils.dirtyfields.DirtyFieldsMixin instead of dirtyfields.DirtyFieldsMixin
+    model_utils.Choices = Use Django enumeration types instead of model_utils Choices
+    model_utils.choices.Choices = Use Django enumeration types instead of model_utils Choices
+    muckrack.utils.json_functions.json_view = Use Django REST framework instead of json_view
+    muckrack.utils.models.MutuallyExclusiveFieldsMixin = Use muckrack.utils.models.MutuallyExclusiveFieldsCheckConstraint instead of MutuallyExclusiveFieldsMixin
+    pickle.dump = Use muckrack.utils.pickle.dump instead of pickle.dump
+    pickle.dumps = Use muckrack.utils.pickle.dumps instead of pickle.dumps
+    pickle.load = Use muckrack.utils.pickle.load instead of pickle.load
+    pickle.loads = Use muckrack.utils.pickle.loads instead of pickle.loads
+    ratelimit.decorators.ratelimit = Use muckrack.utils.http.ratelimit instead of ratelimit.decorators.ratelimit

@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+declare -r DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+
+log() {
+    echo "==> ${*}"
+}
+
+
+install_macos() {
+    if ! command -v brew >/dev/null 2>&1; then
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    fi
+    log 'Installing system dependencies'
+    brew bundle install
+
+    # In macOS 10.14 Mojave, installing command line tools does not install
+    # macOS SDK headers by default. This includes zlib, which pyenv depends on.
+    # Install them now.
+    local macos_version
+    macos_version="$(sw_vers -productVersion | cut -d. -f2)"
+    if [[ $macos_version -eq 14 ]]; then
+        log 'Installing macOS SDK headers'
+        sudo installer -pkg "/Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.${macos_version}.pkg" -target /
+    fi
+}
+
+
+install_debian() {
+    log 'Installing system dependencies'
+    sudo apt update
+    local manifest="${DIR}/../apt-packages.list"
+    xargs -a <(sed '/^#/d' "${manifest}") -r -- sudo apt install
+
+    log 'Installing pyenv'
+    # Temporarily add pyenv to path. pyenv-installer does not add it to a system
+    # shell profile.
+    export PATH="${HOME}/.pyenv/bin:${PATH}"
+    curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+}
+
+
+main() {
+    local uname
+    uname="$(uname)"
+    case $uname in
+        Darwin)
+            install_macos
+            ;;
+        Linux)
+            local lsb_id
+            lsb_id="$(lsb_release --id --short)"
+            case $lsb_id in
+                Debian|Ubuntu)
+                    install_debian
+                    ;;
+                *)
+                    log "Unsupported distribution: ${lsb_id}" >&2
+                    return 1
+                    ;;
+            esac
+            ;;
+        *)
+            log "Unsupported operating system: ${uname}" >&2
+            return 1
+            ;;
+    esac
+
+    if command -v pyenv >/dev/null 2>&1; then
+        eval "$(pyenv init - --no-rehash)"
+    else
+        log "pyenv is not installed" 2>&1
+        return 1
+    fi
+
+    log "Installing Python from .python-version file"
+    pyenv install --skip-existing
+
+    echo 'Done!'
+
+    # pyenv
+    cat <<EOF
+
+Add the following line to your shell configuration to load pyenv:
+
+    eval "\$(pyenv init -)"
+    eval "\$(pyenv init --path)"
+
+EOF
+}
+
+
+main
