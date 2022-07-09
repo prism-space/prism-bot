@@ -7,14 +7,23 @@ Hopefully I've made this as simple as possible. Let me know on Discord (BlergRus
 Note: Currently the easy setup supports only MacOS and Debian-based Linux systems. It _probably_ works in WSL (Windows Subsystem for Linux) but I've not yet tested it. Consider Windows to be "hard mode". 😅
 
 ```shell
-# Install system-level pre-requisites
-make install
+# Create a .env file and paste in the required API keys and tokens
+cp .env.example .env
 
-# Install python packages
+# Install system-level pre-requisites
 make setup
 
+# Install python packages
+make install
+
 # Start the webserver and visit localhost:9999 in your web browser to check!
-make run
+make run-web
+
+# Create the database and run the migrations
+python manage.py sqlcreate | psql
+python manage.py migrate
+
+# Start the bot in a separate terminal instance from the webserver
+make run-bot
 ```
 
-Once you've confirmed the Django server runs, you can go ahead and run the database migrations (`python manage.py migrate`) and create an admin user (`python manage.py createsuperuser`).
