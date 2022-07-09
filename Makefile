@@ -11,5 +11,8 @@ lint:
 	flake8
 	black --check --fast .
 
-run:
-	python manage.py runserver 0.0.0.0:9999
+run-web:
+	python manage.py runserver 0:9999
+
+run-bot:
+	python manage.py run-bot
