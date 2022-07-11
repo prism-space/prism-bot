@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "prismbot.bot",
+    "prismbot.roles",
 ]
 
 MIDDLEWARE = [
@@ -75,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "prismbot.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database

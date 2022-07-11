@@ -1,37 +1,39 @@
 import discord
-from discord import app_commands
+from discord.ext import commands
 from django.conf import settings
 
 DISCORD_GUILD = discord.Object(id=settings.DISCORD_GUILD_ID)
+INSTALLED_EXTENSIONS = ["prismbot.bot.commands.roles"]
 
 
-class BotClient(discord.Client):
-    def __init__(self, *, intents: discord.Intents, application_id: int):
-        super().__init__(intents=intents, application_id=application_id)
-        self.tree = app_commands.CommandTree(self)
+class BotClient(commands.Bot):
+    def __init__(
+        self, *, intents: discord.Intents, command_prefix: str, application_id: int
+    ):
+        super().__init__(
+            intents=intents,
+            command_prefix=command_prefix,
+            application_id=application_id,
+        )
 
     async def setup_hook(self):
-        self.tree.copy_global_to(guild=DISCORD_GUILD)
-        await self.tree.sync(guild=DISCORD_GUILD)
+        for extension in INSTALLED_EXTENSIONS:
+            await self.load_extension(extension)
+        bot.tree.copy_global_to(guild=DISCORD_GUILD)
+        await bot.tree.sync(guild=DISCORD_GUILD)
+
+    async def on_ready(self):
+        print(f"Logged in as {self.user} (ID: {self.user.id})")
+        print("------")
 
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 
-client = BotClient(intents=intents, application_id=settings.DISCORD_APPLICATION_ID)
-
-
-@client.event
-async def on_ready():
-    print(f"Logged in as {client.user} (ID: {client.user.id})")
-    print("------")
+bot = BotClient(
+    intents=intents, command_prefix="=", application_id=settings.DISCORD_APPLICATION_ID
+)
 
 
 def run(token):
     print("[Bot] - Starting with DEBUG=" + str(settings.DEBUG))
-    client.run(token, reconnect=True)
-
-
-@client.tree.command()
-async def hello(interaction: discord.Interaction):
-    """Says hello!"""
-    await interaction.response.send_message(f"Hi, {interaction.user.mention}")
+    bot.run(token, reconnect=True)
