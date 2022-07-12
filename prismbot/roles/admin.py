@@ -7,6 +7,7 @@ from .models import DiscordRole, RoleCategory
 class DiscordRoleAdmin(admin.ModelAdmin):
     model = DiscordRole
     list_display = ("name", "emoji", "category")
+    readonly_fields = ("discord_role_id", "name")
 
 
 @admin.register(RoleCategory)
