@@ -10,10 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+# import mimetypes
 import os
 from pathlib import Path
 
 import environ
+
+# mimetypes.add_type("text/css", ".css", True)
+# mimetypes.add_type("text/javascript", ".js", True)
 
 env = environ.Env(DEBUG=(bool, False))
 
@@ -31,8 +35,8 @@ SECRET_KEY = env("SECRET_KEY", default=None)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG", default=False)
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
-
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "prismbot.kelseygabriel.dev"]
+CSRF_TRUSTED_ORIGINS = ["https://*.kelseygabriel.dev", "https://*.127.0.0.1"]
 
 # Application definition
 
@@ -50,6 +54,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -84,7 +89,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": env.db(
-        "POSTGRES_URL",
+        "DATABASE_URL",
         default="postgres:///prismbot",
     )
 }
@@ -124,7 +129,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
