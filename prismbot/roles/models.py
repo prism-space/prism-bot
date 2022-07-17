@@ -39,7 +39,11 @@ class DiscordRole(models.Model):
         help_text="Emoji (unicode or discord emoji <name:id> tag) to associate with the Role; appears on signup buttons",
     )
     category = models.ForeignKey(
-        RoleCategory, blank=True, null=True, on_delete=models.SET_NULL
+        RoleCategory,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="discord_roles",
     )
 
     def __str__(self):

@@ -1,9 +1,13 @@
+import logging
+
 import discord
 from discord.ext import commands
 from django.conf import settings
 
 DISCORD_GUILD = discord.Object(id=settings.DISCORD_GUILD_ID)
 INSTALLED_EXTENSIONS = ["prismbot.bot.commands.roles"]
+
+logger = logging.basicConfig(level=logging.DEBUG if settings.DEBUG else logging.INFO)
 
 
 class BotClient(commands.Bot):
@@ -27,7 +31,7 @@ class BotClient(commands.Bot):
         print("------")
 
 
-intents = discord.Intents.all()
+intents = discord.Intents.default()
 
 bot = BotClient(
     intents=intents, command_prefix="=", application_id=settings.DISCORD_APPLICATION_ID
