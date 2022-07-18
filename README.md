@@ -7,7 +7,7 @@ Hopefully I've made this as simple as possible. Let me know on Discord (BlergRus
 Note: Currently the easy setup supports only MacOS and Debian-based Linux systems. It _probably_ works in WSL (Windows Subsystem for Linux) but I've not yet tested it. Consider Windows to be "hard mode". 😅
 
 ```shell
-# Create a .env file and paste in the required API keys and tokens
+# Create a .env file and paste in the required API keys and tokens for your test application and test server
 cp .env.example .env
 
 # Install system-level pre-requisites
