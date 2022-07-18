@@ -5,7 +5,7 @@ setup:
 
 install:
 	@echo "==> Installing application dependencies"
-	pip install -U --exists-action=s -r requirements.txt
+	pip install -U --exists-action=s -r requirements-dev.txt
 
 lint:
 	flake8
