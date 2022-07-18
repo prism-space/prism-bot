@@ -20,11 +20,12 @@ class RoleButtonStyle(Enum):
 
 
 class RoleAssignmentButton(Button):
-    def __init__(self, role: DiscordRole, member: discord.Member) -> None:
+    def __init__(self, role: DiscordRole, interaction: discord.Interaction) -> None:
         role_id = role.discord_role_id
+        guild_role = self.guild_roles_by_id(interaction.guild.roles).get(int(role_id))
         style = (
             RoleButtonStyle.ASSIGNED
-            if self.member_has_role(member, role)
+            if self.member_has_role(interaction.user, guild_role)
             else RoleButtonStyle.UNASSIGNED
         )
         super().__init__(
@@ -74,22 +75,22 @@ class RoleAssignmentView(View):
     def __init__(
         self,
         category: RoleCategory,
-        member: discord.Member,
         interaction: discord.Interaction,
         timeout_callback: Coroutine,
     ) -> None:
         super().__init__(timeout=300)
-        self.member = member
         self.interaction = interaction
         self.timeout_callback = timeout_callback
-        self.populate(category, member)
+        self.populate(category, interaction)
 
-    def populate(self, category, member):
+    def populate(self, category, interaction):
         for role in category.discord_roles.all():
-            self.add_item(RoleAssignmentButton(role, member))
+            self.add_item(RoleAssignmentButton(role, interaction))
 
     async def on_timeout(self) -> None:
-        logger.info(f"Timing out role view called by {self.member.display_name}")
+        logger.info(
+            f"Timing out role view called by {self.interaction.user.display_name}"
+        )
         await self.timeout_callback()
         return await super().on_timeout()
 
@@ -110,22 +111,20 @@ class Roles(commands.Cog):
         name="roles", description="Opens the role self-assignment dialogues"
     )
     async def roles(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Fetching roles...", ephemeral=True)
+        await interaction.response.send_message(
+            "Role self-assignment options:", ephemeral=True
+        )
         assignable_categories = await self.get_assignable_categories()
         category_messages = []
         clear_callback = partial(self.clear_messages, category_messages, interaction)
         for category in assignable_categories:
             category_view = RoleAssignmentView(
                 category=category,
-                member=interaction.user,
                 interaction=interaction,
                 timeout_callback=clear_callback,
             )
             category_webhook: discord.WebhookMessage = await interaction.followup.send(
                 category.message, view=category_view, ephemeral=True
-            )
-            await interaction.edit_original_message(
-                content="Role self-assignment options:"
             )
             category_messages.append(category_webhook)
 
