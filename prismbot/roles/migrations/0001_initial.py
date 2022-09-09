@@ -45,6 +45,13 @@ class Migration(migrations.Migration):
                         help_text="Whether the bot should allow self-assignment of roles in this Category",
                     ),
                 ),
+                (
+                    "unique",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Set to TRUE if only one role in this category may be active at a time",
+                    ),
+                ),
             ],
             options={
                 "verbose_name_plural": "role categories",
