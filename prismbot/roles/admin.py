@@ -13,4 +13,4 @@ class DiscordRoleAdmin(admin.ModelAdmin):
 @admin.register(RoleCategory)
 class RoleCategoryAdmin(admin.ModelAdmin):
     model = RoleCategory
-    list_display = ("name", "message", "self_assignable")
+    list_display = ("name", "message", "self_assignable", "unique")
