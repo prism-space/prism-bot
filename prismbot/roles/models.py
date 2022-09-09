@@ -14,6 +14,10 @@ class RoleCategory(models.Model):
         default=False,
         help_text="Whether the bot should allow self-assignment of roles in this Category",
     )
+        unique = models.BooleanField(
+        default=False,
+        help_text="Set to TRUE if only one role in this category may be active at a time",
+    )
 
     def __str__(self):
         return self.name
